@@ -145,6 +145,53 @@ class _InlineRollingSettingsUI(ServerSettingsBase):
         return {"embed": embed}
 
 
+# =================================================================
+# Alternate impl - hackier, but shows disabling the selected option
+# =================================================================
+# class _InlineRollingButton(discord.ui.Button):
+#     def __init__(self, setting_value: InlineRollingType, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.setting_value = setting_value
+#
+#     async def callback(self, interaction: discord.Interaction):
+#         self.view.settings.inline_enabled = self.setting_value
+#         for item in self.view.children:
+#             item.disabled = False
+#         self.disabled = True
+#         await self.view.refresh_content(interaction)
+#
+#
+# class _InlineRollingSettingsUI(ServerSettingsBase):
+#     @classmethod
+#     def from_menu(cls, other: MenuBase):
+#         self = super().from_menu(other)
+#         self.add_item(_InlineRollingButton(
+#             InlineRollingType.DISABLED, label='Disable', style=discord.ButtonStyle.primary,
+#             disabled=self.settings.inline_enabled == InlineRollingType.DISABLED
+#         ))
+#         self.add_item(_InlineRollingButton(
+#             InlineRollingType.REACTION, label='React', style=discord.ButtonStyle.primary,
+#             disabled=self.settings.inline_enabled == InlineRollingType.REACTION
+#         ))
+#         self.add_item(_InlineRollingButton(
+#             InlineRollingType.ENABLED, label='Enable', style=discord.ButtonStyle.primary,
+#             disabled=self.settings.inline_enabled == InlineRollingType.ENABLED
+#         ))
+#         return self
+#
+#     @discord.ui.button(label='Back', style=discord.ButtonStyle.grey, row=1)
+#     async def back(self, button: discord.ui.Button, interaction: discord.Interaction):
+#         await self.defer_to(ServerSettingsUI, interaction)
+#
+#     def get_content(self):
+#         embed = discord.Embed(
+#             title=f"Server Settings ({self.guild_name}) / Inline Rolling Settings",
+#             colour=discord.Colour.blurple(),
+#             description=get_inline_rolling_desc(self.settings.inline_enabled)
+#         )
+#         return {"embed": embed}
+
+
 def get_inline_rolling_desc(inline_enabled: InlineRollingType) -> str:
     if inline_enabled == InlineRollingType.DISABLED:
         return "Inline rolling is currently **disabled**."

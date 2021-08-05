@@ -12,11 +12,9 @@ class MenuBase(discord.ui.View):
         self.message = None  # type: Optional[discord.Message]
 
     @classmethod
-    def from_menu(cls, other: 'MenuBase', cancel_other=True):
+    def from_menu(cls, other: 'MenuBase'):
         inst = cls(owner=other.owner)
         inst.message = other.message
-        if cancel_other:
-            other.stop()
         for attr in cls.__menu_copy_attrs__:
             # copy the instance attr to the new instance if available, or fall back to the class default
             sentinel = object()
@@ -50,9 +48,11 @@ class MenuBase(discord.ui.View):
         self.message = message
         return message
 
-    async def defer_to(self, view_type: Type['MenuBase'], interaction: discord.Interaction):
+    async def defer_to(self, view_type: Type['MenuBase'], interaction: discord.Interaction, stop=True):
         """Defers control to another menu item."""
-        view = view_type.from_menu(self, cancel_other=True)
+        view = view_type.from_menu(self)
+        if stop:
+            self.stop()
         await interaction.response.edit_message(view=view, **view.get_content())
 
     async def refresh_content(self, interaction: discord.Interaction):
